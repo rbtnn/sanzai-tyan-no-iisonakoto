@@ -32,11 +32,11 @@ window.addEventListener('load', (function(){
                 context.fillStyle = "rgb(0,0,0)";
                 context.fill();
 
-                context.drawImage(imgbg, 0, 0, canvas.width, canvas.width);
+                context.drawImage(imgbg, 0, 0, canvas.width, canvas.height);
 
                 context.beginPath();
                 context.moveTo(x + w / 2, y + h / 4 * 1);
-                context.lineTo(canvas.width / 7 * 3, canvas.height / 20 * 19);
+                context.lineTo(canvas.width / 9 * 4, canvas.height / 13 * 10);
                 context.lineTo(x + w / 2, y + h / 4 * 3);
                 context.closePath();
                 context.fillStyle = "rgb(255,255,255)";
