@@ -9,12 +9,18 @@ window.addEventListener('load', (function(){
     var size_height = document.getElementById('size_height');
     var size_font = document.getElementById('size_font');
     var size_lineheight = document.getElementById('size_lineheight');
+    var download = document.getElementById('download');
+    var output = document.getElementById('output');
+    var info_width = document.getElementById('info_width');
+    var info_height = document.getElementById('info_height');
+
     var f = function(){
-        var canvas = document.getElementById('output');
+        var canvas = document.createElement('canvas');
         if(canvas.getContext){
             var context = canvas.getContext('2d');
             var imgbg = new Image();
-            imgbg.src = './img/sanzai.jpg';
+            imgbg.src = 'https://rbtnn.github.io/sanzai-tyan-no-iisonakoto/img/sanzai.jpg';
+            imgbg.crossOrigin = 'Anonymous';
             imgbg.onload = function(){
                 canvas.width = imgbg.width / 2;
                 canvas.height = imgbg.height / 2;
@@ -57,13 +63,26 @@ window.addEventListener('load', (function(){
                 fillRoundRect(x + (w * 0.2), y, w * 0.8, h);
 
                 context.fillStyle = "rgb(0,0,0)";
-                context.font = font_size + "pt monospace";
+                context.font = font_size + "pt 'M+ 2p light'";
                 context.fillText(line1.value, x + w * 0.3, y + h / 2 + (font_size / 2) - lineheight - font_size);
                 context.fillText(line2.value, x + w * 0.3, y + h / 2 + (font_size / 2));
                 context.fillText(line3.value, x + w * 0.3, y + h / 2 + (font_size / 2) + lineheight + font_size);
+
+                while (output.firstChild){
+                    output.removeChild(output.firstChild);
+                }
+                output.appendChild(canvas);
+
+                info_width.innerText = '画像の幅: ' + canvas.width;
+                info_height.innerText = '画像の高さ: ' + canvas.height;
+                try{
+                    download.href = canvas.toDataURL();
+                }
+                catch(e){
+                }
             };
         }
-        setTimeout(f, 500);
+        setTimeout(f, 1000);
     };
     f();
 }));
