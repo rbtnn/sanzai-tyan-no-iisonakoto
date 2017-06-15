@@ -61,13 +61,13 @@ window.addEventListener('load', (function(){
                     context.fillStyle = "rgb(255,255,255)";
                     context.fill();
                 };
-                fillRoundRect(x + (w * 0.2), y, w * 0.8, h);
+                fillRoundRect(x, y, w, h);
 
                 context.fillStyle = "rgb(0,0,0)";
                 context.font = font_size + "pt 'M+ 2p light'";
-                context.fillText(line1.value, x + w * 0.3, y + h / 2 + (font_size / 2) - lineheight - font_size);
-                context.fillText(line2.value, x + w * 0.3, y + h / 2 + (font_size / 2));
-                context.fillText(line3.value, x + w * 0.3, y + h / 2 + (font_size / 2) + lineheight + font_size);
+                context.fillText(line1.value, x + w * 0.1, y + h / 2 + (font_size / 2) - lineheight - font_size);
+                context.fillText(line2.value, x + w * 0.1, y + h / 2 + (font_size / 2));
+                context.fillText(line3.value, x + w * 0.1, y + h / 2 + (font_size / 2) + lineheight + font_size);
 
                 while (output.firstChild){
                     output.removeChild(output.firstChild);
