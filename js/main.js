@@ -20,7 +20,7 @@ window.addEventListener('load', (function(){
             var context = canvas.getContext('2d');
             var imgbg = new Image();
             // imgbg.src = 'https://rbtnn.github.io/sanzai-tyan-no-iisonakoto/img/sanzai.jpg';
-            imgbg.src = '../img/sanzai.jpg';
+            imgbg.src = './img/sanzai.jpg';
             imgbg.crossOrigin = 'Anonymous';
             imgbg.onload = function(){
                 canvas.width = imgbg.width / 2;
