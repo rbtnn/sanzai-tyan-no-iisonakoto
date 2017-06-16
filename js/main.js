@@ -1,5 +1,11 @@
 
 window.addEventListener('load', (function(){
+    var mouse_flag = false;
+    var mouse_x = 0;
+    var mouse_y = 0;
+    var mouse_w = 0;
+    var mouse_h = 0;
+
     var line1 = document.getElementById('line1');
     var line2 = document.getElementById('line2');
     var line3 = document.getElementById('line3');
@@ -52,7 +58,7 @@ window.addEventListener('load', (function(){
         }
     };
 
-    var f = function(){
+    var draw = function(x, y, w, h){
         var canvas = document.createElement('canvas');
         if(canvas.getContext){
             var context = canvas.getContext('2d');
@@ -64,10 +70,6 @@ window.addEventListener('load', (function(){
                 canvas.width = imgbg.width / 2;
                 canvas.height = imgbg.height / 2;
 
-                var x = parseInt(offset_x.value);
-                var y = parseInt(offset_y.value);
-                var w = parseInt(size_width.value);
-                var h = parseInt(size_height.value);
                 var font_size = parseInt(size_font.value);
                 var lineheight = parseInt(size_lineheight.value);
                 var charWidth = context.measureText("あ").width;
@@ -124,6 +126,46 @@ window.addEventListener('load', (function(){
                     }
                 })();
 
+                canvas.addEventListener('mousedown', function(e){
+                    var rect = e.target.getBoundingClientRect();
+                    mouse_x = e.clientX - rect.left;
+                    mouse_y = e.clientY - rect.top;
+                    mouse_flag = true;
+                });
+
+                canvas.addEventListener('mousemove', function(e){
+                    if(mouse_flag){
+                        var rect = e.target.getBoundingClientRect();
+                        var x = e.clientX - rect.left;
+                        var y = e.clientY - rect.top;
+                        mouse_w = x - mouse_x;
+                        mouse_h = y - mouse_y;
+                        // info_width.innerHTML =
+                        //     'x: ' + mouse_x + '<br>' +
+                        //     'y:' + mouse_y + '<br>' +
+                        //     'w: ' + mouse_w + '<br>' +
+                        //     'h:' + mouse_h;
+                        draw( (0 < mouse_w ? mouse_x : x),
+                            (0 < mouse_h ? mouse_y : y),
+                            (0 < mouse_w ? mouse_w : -mouse_w),
+                            (0 < mouse_h ? mouse_h : -mouse_h));
+                    }
+                });
+
+                canvas.addEventListener('mouseup', function(e){
+                    if(mouse_flag){
+                        offset_x.value = (0 < mouse_w ? mouse_x : x);
+                        offset_y.value = (0 < mouse_h ? mouse_y : y);
+                        size_width.value = (0 < mouse_w ? mouse_w : -mouse_w);
+                        size_height.value = (0 < mouse_h ? mouse_h : -mouse_h);
+                        mouse_flag = false;
+                    }
+                });
+
+                canvas.addEventListener('mouseout', function(e){
+                    mouse_flag = false;
+                });
+
                 while (output.firstChild){
                     output.removeChild(output.firstChild);
                 }
@@ -138,7 +180,17 @@ window.addEventListener('load', (function(){
                 }
             };
         }
-        save_localstorage();
+    };
+
+    var f = function(){
+        if (!mouse_flag){
+            var x = parseInt(offset_x.value);
+            var y = parseInt(offset_y.value);
+            var w = parseInt(size_width.value);
+            var h = parseInt(size_height.value);
+            draw(x, y, w, h);
+            save_localstorage();
+        }
         setTimeout(f, 1000);
     };
 
