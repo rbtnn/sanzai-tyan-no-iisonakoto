@@ -17,25 +17,27 @@ window.addEventListener('load', (function(){
 
     var load_localstorage = function(){
         if (localStorage != undefined){
-            var sanzai_tyan_no_iisonakoto = JSON.parse(localStorage.sanzai_tyan_no_iisonakoto);
-            if (sanzai_tyan_no_iisonakoto != undefined){
-                line1.value = sanzai_tyan_no_iisonakoto.line1;
-                line2.value = sanzai_tyan_no_iisonakoto.line2;
-                line3.value = sanzai_tyan_no_iisonakoto.line3;
-                offset_x.value = sanzai_tyan_no_iisonakoto.offset_x;
-                offset_y.value = sanzai_tyan_no_iisonakoto.offset_y;
-                size_width.value = sanzai_tyan_no_iisonakoto.size_width;
-                size_height.value = sanzai_tyan_no_iisonakoto.size_height;
-                size_font.value = sanzai_tyan_no_iisonakoto.size_font;
-                size_lineheight.value = sanzai_tyan_no_iisonakoto.size_lineheight;
-                mode_writing.value = sanzai_tyan_no_iisonakoto.mode_writing;
+            if(localStorage.getItem('sanzai_tyan_no_iisonakoto') != null){
+                var local = JSON.parse(localStorage.sanzai_tyan_no_iisonakoto);
+                if (local != undefined){
+                    line1.value = local.line1;
+                    line2.value = local.line2;
+                    line3.value = local.line3;
+                    offset_x.value = local.offset_x;
+                    offset_y.value = local.offset_y;
+                    size_width.value = local.size_width;
+                    size_height.value = local.size_height;
+                    size_font.value = local.size_font;
+                    size_lineheight.value = local.size_lineheight;
+                    mode_writing.value = local.mode_writing;
+                }
             }
         }
     };
 
     var save_localstorage = function(){
         if (localStorage != undefined){
-            var sanzai_tyan_no_iisonakoto = {
+            localStorage.sanzai_tyan_no_iisonakoto = JSON.stringify({
                 line1 : line1.value,
                 line2 : line2.value,
                 line3 : line3.value,
@@ -46,8 +48,7 @@ window.addEventListener('load', (function(){
                 size_font : size_font.value,
                 size_lineheight : size_lineheight.value,
                 mode_writing : mode_writing.value,
-            };
-            localStorage.sanzai_tyan_no_iisonakoto = JSON.stringify(sanzai_tyan_no_iisonakoto);
+            });
         }
     };
 
