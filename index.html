@@ -25,12 +25,18 @@ a{
             <a href="https://github.com/rbtnn/sanzai-tyan-no-iisonakoto">
                 <img src="./img/GitHub-Mark-64px.png" />
             </a><br>
+            <label>方向</label><br>
+            <select id="mode_writing">
+                <option value="vertical">縦書き</option>
+                <option value="horizontal">横書き</option>
+            </select><br>
+
             <label>1行目</label><br>
-            <input type="text" id="line1" value="1" /><br>
+            <input type="text" id="line1" value="" /><br>
             <label>2行目</label><br>
-            <input type="text" id="line2" value="2" /><br>
+            <input type="text" id="line2" value="" /><br>
             <label>3行目</label><br>
-            <input type="text" id="line3" value="3" /><br>
+            <input type="text" id="line3" value="" /><br>
 
             <label>オフセット-X</label><br>
             <input type="number" id="offset_x" value="400" /><br>
@@ -45,7 +51,7 @@ a{
             <label>フォントサイズ</label><br>
             <input type="number" id="size_font" value="18" /><br>
             <label>行間</label><br>
-            <input type="number" id="size_lineheight" value="5" /><br>
+            <input type="number" id="size_lineheight" value="10" /><br>
             <label id="info_width"></label><br>
             <label id="info_height"></label><br>
             <a id="download" href="">画像をダウンロードする</a><br>

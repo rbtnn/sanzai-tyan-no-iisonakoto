@@ -10,17 +10,54 @@ window.addEventListener('load', (function(){
     var size_font = document.getElementById('size_font');
     var size_lineheight = document.getElementById('size_lineheight');
     var download = document.getElementById('download');
-    var output = document.getElementById('output');
     var info_width = document.getElementById('info_width');
     var info_height = document.getElementById('info_height');
+    var mode_writing = document.getElementById('mode_writing');
+    var output = document.getElementById('output');
+
+    var load_localstorage = function(){
+        if (localStorage != undefined){
+            var sanzai_tyan_no_iisonakoto = JSON.parse(localStorage.sanzai_tyan_no_iisonakoto);
+            if (sanzai_tyan_no_iisonakoto != undefined){
+                line1.value = sanzai_tyan_no_iisonakoto.line1;
+                line2.value = sanzai_tyan_no_iisonakoto.line2;
+                line3.value = sanzai_tyan_no_iisonakoto.line3;
+                offset_x.value = sanzai_tyan_no_iisonakoto.offset_x;
+                offset_y.value = sanzai_tyan_no_iisonakoto.offset_y;
+                size_width.value = sanzai_tyan_no_iisonakoto.size_width;
+                size_height.value = sanzai_tyan_no_iisonakoto.size_height;
+                size_font.value = sanzai_tyan_no_iisonakoto.size_font;
+                size_lineheight.value = sanzai_tyan_no_iisonakoto.size_lineheight;
+                mode_writing.value = sanzai_tyan_no_iisonakoto.mode_writing;
+            }
+        }
+    };
+
+    var save_localstorage = function(){
+        if (localStorage != undefined){
+            var sanzai_tyan_no_iisonakoto = {
+                line1 : line1.value,
+                line2 : line2.value,
+                line3 : line3.value,
+                offset_x : offset_x.value,
+                offset_y : offset_y.value,
+                size_width : size_width.value,
+                size_height : size_height.value,
+                size_font : size_font.value,
+                size_lineheight : size_lineheight.value,
+                mode_writing : mode_writing.value,
+            };
+            localStorage.sanzai_tyan_no_iisonakoto = JSON.stringify(sanzai_tyan_no_iisonakoto);
+        }
+    };
 
     var f = function(){
         var canvas = document.createElement('canvas');
         if(canvas.getContext){
             var context = canvas.getContext('2d');
             var imgbg = new Image();
-            // imgbg.src = 'https://rbtnn.github.io/sanzai-tyan-no-iisonakoto/img/sanzai.jpg';
-            imgbg.src = './img/sanzai.jpg';
+            imgbg.src = 'https://rbtnn.github.io/sanzai-tyan-no-iisonakoto/img/sanzai.jpg';
+            // imgbg.src = './img/sanzai.jpg';
             imgbg.crossOrigin = 'Anonymous';
             imgbg.onload = function(){
                 canvas.width = imgbg.width / 2;
@@ -32,6 +69,7 @@ window.addEventListener('load', (function(){
                 var h = parseInt(size_height.value);
                 var font_size = parseInt(size_font.value);
                 var lineheight = parseInt(size_lineheight.value);
+                var charWidth = context.measureText("あ").width;
 
                 context.beginPath();
                 context.rect(0, 0, canvas.width, canvas.height);
@@ -63,11 +101,27 @@ window.addEventListener('load', (function(){
                 };
                 fillRoundRect(x, y, w, h);
 
-                context.fillStyle = "rgb(0,0,0)";
-                context.font = font_size + "pt 'M+ 2p light'";
-                context.fillText(line1.value, x + w * 0.1, y + h / 2 + (font_size / 2) - lineheight - font_size);
-                context.fillText(line2.value, x + w * 0.1, y + h / 2 + (font_size / 2));
-                context.fillText(line3.value, x + w * 0.1, y + h / 2 + (font_size / 2) + lineheight + font_size);
+                (function(){
+                    context.fillStyle = "rgb(0,0,0)";
+                    context.font = font_size + "pt 'M+ 2p light'";
+                    switch(mode_writing.value){
+                        case "vertical":
+                            [line1.value, line2.value, line3.value].forEach(function(line, i) {
+                                Array.prototype.forEach.call(line, function(ch, j) {
+                                    var offset = (charWidth - context.measureText(ch).width) / 2;
+                                    context.fillText(ch,
+                                        x + w + offset - (charWidth + lineheight) * (i + 1),
+                                        y + (font_size + 3) * (j + 1));
+                                });
+                            });
+                            break;
+                        case "horizontal":
+                            context.fillText(line1.value, x + w * 0.1, y + h / 2 + (font_size / 2) - lineheight - font_size);
+                            context.fillText(line2.value, x + w * 0.1, y + h / 2 + (font_size / 2));
+                            context.fillText(line3.value, x + w * 0.1, y + h / 2 + (font_size / 2) + lineheight + font_size);
+                            break;
+                    }
+                })();
 
                 while (output.firstChild){
                     output.removeChild(output.firstChild);
@@ -83,7 +137,10 @@ window.addEventListener('load', (function(){
                 }
             };
         }
+        save_localstorage();
         setTimeout(f, 1000);
     };
+
+    load_localstorage();
     f();
 }));
