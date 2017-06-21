@@ -1,20 +1,22 @@
 
 window.addEventListener('load', (function(){
+    var font_name = 'M+ 2p light';
     var mouse_flag = false;
     var mouse_x = 0;
     var mouse_y = 0;
     var mouse_w = 0;
     var mouse_h = 0;
 
-    var line1 = document.getElementById('line1');
-    var line2 = document.getElementById('line2');
-    var line3 = document.getElementById('line3');
+    var line1_string = document.getElementById('line1_string');
+    var line1_size = document.getElementById('line1_size');
+    var line2_string = document.getElementById('line2_string');
+    var line2_size = document.getElementById('line2_size');
+    var line3_string = document.getElementById('line3_string');
+    var line3_size = document.getElementById('line3_size');
     var offset_x = document.getElementById('offset_x');
     var offset_y = document.getElementById('offset_y');
     var size_width = document.getElementById('size_width');
     var size_height = document.getElementById('size_height');
-    var size_font = document.getElementById('size_font');
-    var size_lineheight = document.getElementById('size_lineheight');
     var download = document.getElementById('download');
     var info_width = document.getElementById('info_width');
     var info_height = document.getElementById('info_height');
@@ -26,15 +28,16 @@ window.addEventListener('load', (function(){
             if(localStorage.getItem('sanzai_tyan_no_iisonakoto') != null){
                 var local = JSON.parse(localStorage.sanzai_tyan_no_iisonakoto);
                 if (local != undefined){
-                    line1.value = local.line1;
-                    line2.value = local.line2;
-                    line3.value = local.line3;
+                    line1_string.value = local.line1_string;
+                    line1_size.value = local.line1_size;
+                    line2_string.value = local.line2_string;
+                    line2_size.value = local.line2_size;
+                    line3_string.value = local.line3_string;
+                    line3_size.value = local.line3_size;
                     offset_x.value = local.offset_x;
                     offset_y.value = local.offset_y;
                     size_width.value = local.size_width;
                     size_height.value = local.size_height;
-                    size_font.value = local.size_font;
-                    size_lineheight.value = local.size_lineheight;
                     mode_writing.value = local.mode_writing;
                 }
             }
@@ -44,15 +47,16 @@ window.addEventListener('load', (function(){
     var save_localstorage = function(){
         if (localStorage != undefined){
             localStorage.sanzai_tyan_no_iisonakoto = JSON.stringify({
-                line1 : line1.value,
-                line2 : line2.value,
-                line3 : line3.value,
+                line1_string : line1_string.value,
+                line1_size : line1_size.value,
+                line2_string : line2_string.value,
+                line2_size : line2_size.value,
+                line3_string : line3_string.value,
+                line3_size : line3_size.value,
                 offset_x : offset_x.value,
                 offset_y : offset_y.value,
                 size_width : size_width.value,
                 size_height : size_height.value,
-                size_font : size_font.value,
-                size_lineheight : size_lineheight.value,
                 mode_writing : mode_writing.value,
             });
         }
@@ -90,15 +94,12 @@ window.addEventListener('load', (function(){
         if(canvas.getContext){
             var context = canvas.getContext('2d');
             var imgbg = new Image();
-            imgbg.src = 'https://rbtnn.github.io/sanzai-tyan-no-iisonakoto/img/sanzai.jpg';
-            // imgbg.src = './img/sanzai.jpg';
+            // imgbg.src = 'https://rbtnn.github.io/sanzai-tyan-no-iisonakoto/img/sanzai.jpg';
+            imgbg.src = './img/sanzai.jpg';
             imgbg.crossOrigin = 'Anonymous';
             imgbg.onload = function(){
                 canvas.width = imgbg.width / 2;
                 canvas.height = imgbg.height / 2;
-
-                var font_size = parseInt(size_font.value);
-                var lineheight = parseInt(size_lineheight.value);
 
                 context.beginPath();
                 context.rect(0, 0, canvas.width, canvas.height);
@@ -136,9 +137,11 @@ window.addEventListener('load', (function(){
                         return b ? 'height' : 'width';
                     };
                     context.fillStyle = "rgb(0,0,0)";
-                    context.font = font_size + "pt 'M+ 2p light'";
-                    var multiInfo = measureText("あ", context.font);
-                    var lines = [line1.value, line2.value, line3.value];
+                    var lines = [
+                        { 'text' : line1_string.value, 'size' : line1_size.value },
+                        { 'text' : line2_string.value, 'size' : line2_size.value },
+                        { 'text' : line3_string.value, 'size' : line3_size.value }
+                    ];
 
                     var max = 0;
                     var default_offset = { 'width' : x + w, 'height' : y };
@@ -146,8 +149,10 @@ window.addEventListener('load', (function(){
 
                     offset = { 'width' : x + w, 'height' : y };
                     lines.forEach(function(line, lnum) {
+                        context.font = line.size + "pt '" + font_name + "'";
+                        var multiInfo = measureText("あ", context.font);
                         offset[what(true)] = default_offset[what(true)];
-                        Array.prototype.forEach.call(line, function(ch, col){
+                        Array.prototype.forEach.call(line.text, function(ch, col){
                             var info = measureText(ch, context.font);
                             offset[what(true)] += info[what(true)];
                         });
@@ -163,26 +168,37 @@ window.addEventListener('load', (function(){
 
                     offset = { 'width' : x + w, 'height' : y };
                     lines.forEach(function(line, lnum) {
+                        context.font = line.size + "pt '" + font_name + "'";
+                        var multiInfo = measureText("あ", context.font);
                         offset[what(true)] = default_offset[what(true)];
-                        Array.prototype.forEach.call(line, function(ch, col){
+                        Array.prototype.forEach.call(line.text, function(ch, col){
                             var info = measureText(ch, context.font);
                             switch(mode_writing.value){
                                 case 'vertical':
                                     offset.height += info.height;
                                     var d = (multiInfo.width - info.width) / 2 - multiInfo.width;
                                     context.fillText(ch,
-                                        offset.width  - (w - rect_w) + (w - rect_w) / 2 + d,
-                                        offset.height + (h - rect_h) - (h - rect_h) / 2);
+                                        offset.width  - (w - rect_w) / 2 + d,
+                                        offset.height + (h - rect_h) / 2);
                                     break;
                                 case 'horizontal':
+                                    var d = multiInfo.height;
                                     context.fillText(ch,
-                                        offset.width - w + (w - rect_w) / 2,
-                                        offset.height + h - (h - rect_h) / 2);
+                                        offset.width  + (w - rect_w) / 2 - w,
+                                        offset.height + (h - rect_h) / 2 + d);
                                     offset.width += info.width;
                                     break;
                             }
                         });
-                        offset[what(false)] -= multiInfo[what(false)];
+                        switch(mode_writing.value){
+                            case 'vertical':
+                                offset.height -= multiInfo.height;
+                                offset.width -= multiInfo.width;
+                                break;
+                            case 'horizontal':
+                                offset.height += multiInfo.height;
+                                break;
+                        }
                     });
                 })();
 
@@ -253,6 +269,18 @@ window.addEventListener('load', (function(){
         }
         setTimeout(f, 1000);
     };
+
+    line1_string.addEventListener('keyup', f);
+    line1_size.addEventListener('change', f);
+    line2_string.addEventListener('keyup', f);
+    line2_size.addEventListener('change', f);
+    line3_string.addEventListener('keyup', f);
+    line3_size.addEventListener('change', f);
+    offset_x.addEventListener('change', f);
+    offset_y.addEventListener('change', f);
+    size_width.addEventListener('change', f);
+    size_height.addEventListener('change', f);
+    mode_writing.addEventListener('change', f);
 
     load_localstorage();
     f();
