@@ -267,7 +267,7 @@ window.addEventListener('load', (function(){
             draw(x, y, w, h);
             save_localstorage();
         }
-        setTimeout(f, 1000);
+        // setTimeout(f, 1000);
     };
 
     line1_string.addEventListener('keyup', f);
