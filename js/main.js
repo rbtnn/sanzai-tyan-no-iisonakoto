@@ -58,13 +58,40 @@ window.addEventListener('load', (function(){
         }
     };
 
+    var measureText = function(line, font){
+        var rtn = { 'width' : 0, 'height' : 0 };
+        var canvas = document.createElement('canvas');
+        canvas.width = 100;
+        canvas.height = 100;
+        if(canvas.getContext){
+            var context = canvas.getContext('2d');
+            context.font = font;
+            context.fillText(line, 0, canvas.height / 2);
+            rtn.width = context.measureText(line).width;
+            var pixels = context.getImageData(0, 0, canvas.width, canvas.height);
+            var data = pixels.data;
+            var currentRow = -1;
+            for (var i = 0, len = data.length; i < len; i += 4) {
+                var alpha = data[i + 3];
+                if (alpha > 0) {
+                    var row = Math.floor((i / 4) / canvas.width);
+                    if (row > currentRow) {
+                        currentRow = row;
+                        rtn.height++;
+                    }
+                }
+            }
+        }
+        return rtn;
+    };
+
     var draw = function(x, y, w, h){
         var canvas = document.createElement('canvas');
         if(canvas.getContext){
             var context = canvas.getContext('2d');
             var imgbg = new Image();
-            // imgbg.src = 'https://rbtnn.github.io/sanzai-tyan-no-iisonakoto/img/sanzai.jpg';
-            imgbg.src = './img/sanzai.jpg';
+            imgbg.src = 'https://rbtnn.github.io/sanzai-tyan-no-iisonakoto/img/sanzai.jpg';
+            // imgbg.src = './img/sanzai.jpg';
             imgbg.crossOrigin = 'Anonymous';
             imgbg.onload = function(){
                 canvas.width = imgbg.width / 2;
@@ -72,7 +99,6 @@ window.addEventListener('load', (function(){
 
                 var font_size = parseInt(size_font.value);
                 var lineheight = parseInt(size_lineheight.value);
-                var charWidth = context.measureText("あ").width;
 
                 context.beginPath();
                 context.rect(0, 0, canvas.width, canvas.height);
@@ -105,25 +131,59 @@ window.addEventListener('load', (function(){
                 fillRoundRect(x, y, w, h);
 
                 (function(){
+                    var what = function(flag){
+                        var b = (mode_writing.value == (flag ? 'vertical' : 'horizontal'));
+                        return b ? 'height' : 'width';
+                    };
                     context.fillStyle = "rgb(0,0,0)";
                     context.font = font_size + "pt 'M+ 2p light'";
-                    switch(mode_writing.value){
-                        case "vertical":
-                            [line1.value, line2.value, line3.value].forEach(function(line, i) {
-                                Array.prototype.forEach.call(line, function(ch, j) {
-                                    var offset = (charWidth - context.measureText(ch).width) / 2;
+                    var multiInfo = measureText("あ", context.font);
+                    var lines = [line1.value, line2.value, line3.value];
+
+                    var max = 0;
+                    var default_offset = { 'width' : x + w, 'height' : y };
+                    var offset = {};
+
+                    offset = { 'width' : x + w, 'height' : y };
+                    lines.forEach(function(line, lnum) {
+                        offset[what(true)] = default_offset[what(true)];
+                        Array.prototype.forEach.call(line, function(ch, col){
+                            var info = measureText(ch, context.font);
+                            offset[what(true)] += info[what(true)];
+                        });
+                        if(max < offset[what(true)]){
+                            max = offset[what(true)];
+                        }
+                        offset[what(false)] -= multiInfo[what(false)];
+                    });
+                    offset[what(true)] = max;
+
+                    var rect_w = Math.abs(default_offset.width - offset.width);
+                    var rect_h = Math.abs(default_offset.height - offset.height);
+
+                    offset = { 'width' : x + w, 'height' : y };
+                    lines.forEach(function(line, lnum) {
+                        offset[what(true)] = default_offset[what(true)];
+                        Array.prototype.forEach.call(line, function(ch, col){
+                            var info = measureText(ch, context.font);
+                            switch(mode_writing.value){
+                                case 'vertical':
+                                    offset.height += info.height;
+                                    var d = (multiInfo.width - info.width) / 2 - multiInfo.width;
                                     context.fillText(ch,
-                                        x + w + offset - (charWidth + lineheight) * (i + 1),
-                                        y + (font_size + 3) * (j + 1));
-                                });
-                            });
-                            break;
-                        case "horizontal":
-                            context.fillText(line1.value, x + w * 0.1, y + h / 2 + (font_size / 2) - lineheight - font_size);
-                            context.fillText(line2.value, x + w * 0.1, y + h / 2 + (font_size / 2));
-                            context.fillText(line3.value, x + w * 0.1, y + h / 2 + (font_size / 2) + lineheight + font_size);
-                            break;
-                    }
+                                        offset.width  - (w - rect_w) + (w - rect_w) / 2 + d,
+                                        offset.height + (h - rect_h) - (h - rect_h) / 2);
+                                    break;
+                                case 'horizontal':
+                                    context.fillText(ch,
+                                        offset.width - w + (w - rect_w) / 2,
+                                        offset.height + h - (h - rect_h) / 2);
+                                    offset.width += info.width;
+                                    break;
+                            }
+                        });
+                        offset[what(false)] -= multiInfo[what(false)];
+                    });
                 })();
 
                 canvas.addEventListener('mousedown', function(e){
