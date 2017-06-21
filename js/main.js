@@ -40,6 +40,30 @@ window.addEventListener('load', (function(){
                     size_height.value = local.size_height;
                     mode_writing.value = local.mode_writing;
                 }
+                if(isNaN(parseInt(line1_size.value))){
+                    line1_size.value = "8";
+                }
+                if(isNaN(parseInt(line2_size.value))){
+                    line2_size.value = "8";
+                }
+                if(isNaN(parseInt(line3_size.value))){
+                    line3_size.value = "8";
+                }
+                if(isNaN(parseInt(offset_x.value))){
+                    offset_x.value = "400";
+                }
+                if(isNaN(parseInt(offset_y.value))){
+                    offset_y.value = "360";
+                }
+                if(isNaN(parseInt(size_width.value))){
+                    size_width.value = "200";
+                }
+                if(isNaN(parseInt(size_height.value))){
+                    size_height.value = "120";
+                }
+                if((mode_writing.value != 'vertical') && (mode_writing.value != 'horizontal')){
+                    mode_writing.value = 'vertical';
+                }
             }
         }
     };
@@ -235,6 +259,7 @@ window.addEventListener('load', (function(){
                         size_width.value = (0 < mouse_w ? mouse_w : -mouse_w);
                         size_height.value = (0 < mouse_h ? mouse_h : -mouse_h);
                         mouse_flag = false;
+                        save_localstorage();
                     }
                 });
 
@@ -267,7 +292,6 @@ window.addEventListener('load', (function(){
             draw(x, y, w, h);
             save_localstorage();
         }
-        // setTimeout(f, 1000);
     };
 
     line1_string.addEventListener('keyup', f);
